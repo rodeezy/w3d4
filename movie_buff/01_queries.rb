@@ -40,6 +40,7 @@ def biggest_cast
   # Often these are combined with group.
   #
   # Find the id and title of the 3 movies with the largest casts (i.e most actors)
+  Movie.joins(:actors).group('movies.id').order("COUNT(actors.id) DESC").limit(3).select('movies.title, movies.id')
 
 end
 
@@ -51,7 +52,12 @@ def directed_by_one_of(them)
   # We can use IN to test if an element is present in an array.
   #
   # Find the id and title of all the movies directed by one of 'them'.
+  # directors = them.map { |dir| Actor.find_by_name(dir) }, DON'T NEED THIS
+  Movie.joins(:director)
+  .where('actors.name IN (?)', them)
+  .select(:id, :title)
 
+  #CAN JOIN ON ASSOCIATIONS
 end
 
 def movie_names_before_1940
@@ -65,5 +71,7 @@ def movie_names_before_1940
   # improve performace for larger queries.
   #
   # Use pluck to find the title of all movies made before 1940.
+
+  Movie.where("yr < 1940").pluck(:title)
 
 end
